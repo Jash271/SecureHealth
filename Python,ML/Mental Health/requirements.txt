@@ -1,0 +1,10 @@
+uvicorn==0.11.5
+shortenIt
+spacy==2.2.0
+fastapi==0.59.0
+black==19.10b0
+gunicorn==20.0.4
+vader-sentiment
+YouGlance==0.0.9
+
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.0/en_core_web_sm-2.2.0.tar.gz
