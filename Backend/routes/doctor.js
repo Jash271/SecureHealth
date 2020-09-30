@@ -16,7 +16,7 @@ router.post('/register', [
     check('name', 'Please enter a name').not().isEmpty(),
     check('email', 'Enter a valid email address').isEmail(),
     check('password', 'Please enter a valid password').isLength({ min: 6 })
-], async (req, res) => {
+], async(req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
         return res.status(400).send({
@@ -55,8 +55,7 @@ router.post('/register', [
             if (err) throw err;
             res.json({ token, doctor })
         })
-    }
-    catch (error) {
+    } catch (error) {
         console.log(error.message);
         res.status(500).send('Server Error')
     }
@@ -68,7 +67,7 @@ router.post('/register', [
 router.post('/login', [
     check('email', 'Please enter a valid email id').isEmail(),
     check('password', 'Password is required').exists()
-], async (req, res) => {
+], async(req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).send({
@@ -118,7 +117,7 @@ router.post('/login', [
 
 //Get qr scanned users details on the desktop
 
-router.get('/userDetails', auth, async (req, res) => {
+router.get('/userDetails', auth, async(req, res) => {
 
     try {
         console.log(req.decoded.user.id)
@@ -150,7 +149,7 @@ router.get('/userDetails', auth, async (req, res) => {
 })
 
 //Doctor writing prescription for the patient and saving it inside that patients db
-router.post('/prescription', auth, async (req, res) => {
+router.post('/prescription', auth, async(req, res) => {
 
     try {
         const { prescription, userId } = req.body;
@@ -171,5 +170,26 @@ router.post('/prescription', auth, async (req, res) => {
     }
 })
 
+router.get('/getAllDoctor', auth, async(req, res) => {
+
+    try {
+
+        Doctor.find().then((data) => {
+            res.status(200).json({
+                item: data
+            });
+        }).catch(err => {
+            res.status(500).json({
+                msg: 'Server Error ' + err
+            });
+        })
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            msg: 'Server Error'
+        })
+    }
+})
 
 module.exports = router
