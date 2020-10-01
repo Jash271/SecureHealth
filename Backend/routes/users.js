@@ -8,6 +8,7 @@ const auth = require('../middleware/auth');
 const Report = require('../models/Report');
 const Doctor = require('../models/Doctor');
 const Prescription = require('../models/Prescription')
+const { cache } = require('../middleware/cache')
 
 //Register a User
 
@@ -109,7 +110,7 @@ router.post('/qrauth', async (req, res) => {
 //Login the user
 router.post('/login', [
     check('email', 'Please enter a valid email id').isEmail()
-], async (req, res) => {
+], cache, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).send({
@@ -136,6 +137,8 @@ router.post('/login', [
             expiresIn: 360000
         }, (err, token) => {
             if (err) throw err;
+            client.setex(user.name, 3600, JSON.stringify(user));
+
             res.json({ token, user })
         })
 
@@ -226,6 +229,23 @@ router.post('/removeCurrentDoctor', async (req, res) => {
         })
     }
 
+})
+
+router.get('/', auth, cache, async (req, res) => {
+    try {
+
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).send({ msg: 'User not found' });
+        }
+
+        return res.status(200).send(user);
+
+    } catch (error) {
+
+        res.status(500).send(error.message);
+    }
 })
 
 
